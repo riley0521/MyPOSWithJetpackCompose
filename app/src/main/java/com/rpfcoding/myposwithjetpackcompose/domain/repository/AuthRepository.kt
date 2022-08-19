@@ -5,5 +5,7 @@ import com.rpfcoding.myposwithjetpackcompose.util.Resource
 
 interface AuthRepository {
 
-    suspend fun login(username: String, password: String): Resource<User>
+    suspend fun login(username: String, password: String): Resource<Unit>
+
+    suspend fun isAuthenticated(token: String): Resource<Unit>
 }

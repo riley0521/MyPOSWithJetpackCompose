@@ -1,14 +1,14 @@
 package com.rpfcoding.myposwithjetpackcompose.di
 
-import com.rpfcoding.myposwithjetpackcompose.data.remote.MyApi
+import com.rpfcoding.myposwithjetpackcompose.data.remote.ApiAuthEndpoints
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -20,6 +20,7 @@ object NetworkModule {
     @Singleton
     fun provideClient(): OkHttpClient {
         return OkHttpClient.Builder()
+            .readTimeout(15, TimeUnit.SECONDS)
             .callTimeout(15, TimeUnit.SECONDS)
             .build()
     }
@@ -30,15 +31,15 @@ object NetworkModule {
         client: OkHttpClient
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://192.168.0.107:7009/api/v1/")
-            .addConverterFactory(MoshiConverterFactory.create())
+            .baseUrl(BASE_URL)
             .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideMyApi(
+    fun provideApiAuthEndpoints(
         retrofit: Retrofit
-    ): MyApi = retrofit.create()
+    ): ApiAuthEndpoints = retrofit.create(ApiAuthEndpoints::class.java)
 }

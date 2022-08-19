@@ -10,13 +10,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.rpfcoding.myposwithjetpackcompose.presentation.NavGraphs
 import com.rpfcoding.myposwithjetpackcompose.ui.theme.MyPOSWithJetpackComposeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyPOSWithJetpackComposeTheme {
+                DestinationsNavHost(navGraph = NavGraphs.root)
             }
         }
     }

@@ -5,8 +5,13 @@ import androidx.room.Entity
 import androidx.room.Relation
 
 @Entity
-data class UserWithPositionAddressesModules(
+data class UserWithBusinessPositionAddressesModulesEntity(
     @Embedded val userEntity: UserEntity,
+    @Relation(
+        parentColumn = "userId",
+        entityColumn = "userId",
+    )
+    val business: BusinessEntity,
     @Relation(
         parentColumn = "userId",
         entityColumn = "userId"

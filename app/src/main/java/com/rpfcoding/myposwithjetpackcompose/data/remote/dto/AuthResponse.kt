@@ -1,7 +1,7 @@
 package com.rpfcoding.myposwithjetpackcompose.data.remote.dto
 
 data class AuthResponse(
-    val user: UserDto,
+    val userId: Int,
+    val businessId: Int,
     val token: String,
-    val statusCode: Int
 )

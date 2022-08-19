@@ -1,119 +1,111 @@
 package com.rpfcoding.myposwithjetpackcompose.data.repository
 
-import com.rpfcoding.myposwithjetpackcompose.data.local.AddressDao
-import com.rpfcoding.myposwithjetpackcompose.data.local.ModuleDao
-import com.rpfcoding.myposwithjetpackcompose.data.local.PositionDao
-import com.rpfcoding.myposwithjetpackcompose.data.local.UserDao
-import com.rpfcoding.myposwithjetpackcompose.data.local.entity.AddressEntity
-import com.rpfcoding.myposwithjetpackcompose.data.local.entity.ModuleEntity
-import com.rpfcoding.myposwithjetpackcompose.data.local.entity.PositionEntity
-import com.rpfcoding.myposwithjetpackcompose.data.local.entity.UserEntity
-import com.rpfcoding.myposwithjetpackcompose.data.remote.MyApi
-import com.rpfcoding.myposwithjetpackcompose.data.remote.dto.AuthResponse
+import com.rpfcoding.myposwithjetpackcompose.data.remote.ApiAuthEndpoints
 import com.rpfcoding.myposwithjetpackcompose.data.remote.dto.LoginDto
-import com.rpfcoding.myposwithjetpackcompose.domain.model.User
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
+import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.getAuth
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-class RemoteAuthRepository(
-    private val api: MyApi,
-    private val userDao: UserDao,
-    private val positionDao: PositionDao,
-    private val addressDao: AddressDao,
-    private val moduleDao: ModuleDao
+class RemoteAuthRepository @Inject constructor(
+    private val api: ApiAuthEndpoints,
+    private val prefRepository: MyPreferencesRepository
 ) : AuthRepository {
 
-    override suspend fun login(username: String, password: String): Resource<User> {
+    override suspend fun login(username: String, password: String): Resource<Unit> {
         return try {
             val result = api.login(LoginDto(username, password))
 
-            if(result.isSuccessful) {
-                val authResponse = result.body()
-                authResponse?.let {
+            // Clear database every login
+            // clearAllTableFromDb()
 
-                    // Clear database every login
-                    clearAllTableFromDb()
+            // Insert the response to room db to have single source of truth
+            // insertResponseToDb(result)
 
-                    // Insert the response to room db to have single source of truth
-                    insertResponseToDb(authResponse)
-                }
+            // Save response (userId, businessId, token) to sharedPrefs
+            prefRepository.saveUserId(result.userId)
+            prefRepository.saveBusinessId(result.businessId)
+            prefRepository.saveToken(result.token)
 
-                val user = userDao.getOne()
-                if(user.isEmpty()) {
-                    Resource.Error("Cannot login.", null)
-                }
-
-                Resource.Success(user[0].toUser())
-            }
-
-            Resource.Error("Unknown error occurred.")
+            Resource.Success(Unit)
         } catch (e: HttpException) {
-            Resource.Error(e.message.toString())
+            Resource.Error("Invalid username or password.")
         } catch (e: IOException) {
             Resource.Error("Unknown error occurred.")
         }
     }
 
-    private suspend fun clearAllTableFromDb() {
-        userDao.deleteAll()
-        positionDao.deleteAll()
-        addressDao.deleteAll()
-        moduleDao.deleteAll()
-    }
+    override suspend fun isAuthenticated(token: String): Resource<Unit> {
+        return try {
+            api.isAuthenticated(getAuth(token))
 
-    private suspend fun insertResponseToDb(authResponse: AuthResponse) {
-        userDao.insert(
-            UserEntity(
-                businessId = authResponse.user.businessId,
-                firstName = authResponse.user.firstName,
-                middleName = authResponse.user.middleName,
-                lastName = authResponse.user.lastName,
-                profileImageUrl = authResponse.user.profileImageUrl,
-                emailAddress = authResponse.user.profileImageUrl,
-                isBusinessOwner = authResponse.user.isBusinessOwner,
-                isActive = authResponse.user.isActive,
-                positionId = authResponse.user.positionId,
-                userId = authResponse.user.userId
-            )
-        )
-
-        authResponse.user.position?.let { position ->
-            positionDao.insert(
-                PositionEntity(
-                    name = position.name,
-                    businessId = position.businessId,
-                    userId = authResponse.user.userId,
-                    positionId = position.positionId
-                )
-            )
-        }
-
-        authResponse.user.addresses.forEach { address ->
-            addressDao.insert(
-                AddressEntity(
-                    userId = authResponse.user.userId,
-                    country = address.country,
-                    region = address.region,
-                    province = address.province,
-                    city = address.city,
-                    street = address.street,
-                    contactNo = address.contactNo,
-                    isDefault = address.isDefault,
-                    addressId = address.addressId
-                )
-            )
-        }
-
-        authResponse.user.modules.forEach { module ->
-            moduleDao.insert(
-                ModuleEntity(
-                    name = module.name,
-                    userId = authResponse.user.userId,
-                    moduleId = module.moduleId
-                )
-            )
+            Resource.Success(Unit)
+        } catch (e: HttpException) {
+            if (e.code() == 401) {
+                Resource.Error("Unauthorized / Your token expired. Please log in again.")
+            } else {
+                Resource.Error("Unknown error. Please log in again.")
+            }
+        } catch (e: IOException) {
+            Resource.Error("Unknown error. Please log in again.")
         }
     }
+
+    //    private suspend fun clearAllTableFromDb() {
+//        userDao.deleteAll()
+//        positionDao.deleteAll()
+//        addressDao.deleteAll()
+//        moduleDao.deleteAll()
+//    }
+
+//    private suspend fun insertResponseToDb(authResponse: AuthResponse) {
+//        userDao.insert(
+//            UserEntity(
+//                firstName = authResponse.user.firstName,
+//                middleName = authResponse.user.middleName,
+//                lastName = authResponse.user.lastName,
+//                profileImageUrl = authResponse.user.profileImageUrl,
+//                emailAddress = authResponse.user.profileImageUrl,
+//                isBusinessOwner = authResponse.user.isBusinessOwner,
+//                isActive = authResponse.user.isActive,
+//                userId = authResponse.user.userId,
+//
+//            )
+//        )
+//
+//        authResponse.user.position?.let { position ->
+//            positionDao.insert(
+//                PositionEntity(
+//                    name = position.name,
+//                    userId = authResponse.user.userId,
+//                    positionId = position.positionId
+//                )
+//            )
+//        }
+//
+//        addressDao.insert(authResponse.user.addresses.map { address ->
+//            AddressEntity(
+//                userId = authResponse.user.userId,
+//                country = address.country,
+//                region = address.region,
+//                province = address.province,
+//                city = address.city,
+//                street = address.street,
+//                contactNo = address.contactNo,
+//                isDefault = address.isDefault,
+//                addressId = address.addressId
+//            )
+//        })
+//
+//        moduleDao.insert(authResponse.user.modules.map { module ->
+//            ModuleEntity(
+//                name = module.name,
+//                userId = authResponse.user.userId,
+//                moduleId = module.moduleId
+//            )
+//        })
+//    }
 }

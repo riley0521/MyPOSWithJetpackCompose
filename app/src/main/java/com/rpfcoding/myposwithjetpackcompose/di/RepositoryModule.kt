@@ -1,7 +1,9 @@
 package com.rpfcoding.myposwithjetpackcompose.di
 
+import com.rpfcoding.myposwithjetpackcompose.data.repository.MyPreferencesRepositoryImpl
 import com.rpfcoding.myposwithjetpackcompose.data.repository.RemoteAuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
+import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,4 +15,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindAuthRepository(remoteAuthRepository: RemoteAuthRepository): AuthRepository
+
+    @Binds
+    abstract fun bindMyPreferencesRepository(myPreferencesRepositoryImpl: MyPreferencesRepositoryImpl): MyPreferencesRepository
 }
