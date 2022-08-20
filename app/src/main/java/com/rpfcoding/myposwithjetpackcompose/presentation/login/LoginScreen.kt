@@ -16,6 +16,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rpfcoding.myposwithjetpackcompose.R
+import com.rpfcoding.myposwithjetpackcompose.presentation.common.MyOutlinedTextField
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterUserScreenDestination
 import kotlinx.coroutines.flow.collectLatest
 
 @Destination
@@ -29,20 +31,19 @@ fun LoginScreen(
 
     val context = LocalContext.current
 
-    val errorMsg = stringResource(id = R.string.unknown_error)
-
     val successMsg = stringResource(id = R.string.login_success)
 
     LaunchedEffect(key1 = viewModel.loginEvent) {
         viewModel.loginEvent.collectLatest { event ->
-            when(event) {
+            when (event) {
                 LoginViewModel.LoginEvent.NavigateToHome -> {
                     Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
                 }
                 is LoginViewModel.LoginEvent.ShowError -> {
-                    Toast.makeText(context, event.msg ?: errorMsg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, event.msg?.asString(context), Toast.LENGTH_SHORT).show()
                 }
             }
+
         }
     }
 
@@ -73,53 +74,51 @@ fun LoginScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(
-                    verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.End
                 ) {
-                    OutlinedTextField(
+                    MyOutlinedTextField(
                         value = state.usernameText,
                         onValueChange = viewModel::onUsernameChange,
-                        placeholder = {
-                            Text(text = stringResource(id = R.string.hint_username))
-                        },
-                        label = {
-                            Text(text = stringResource(id = R.string.hint_username))
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        placeholder = stringResource(id = R.string.hint_username),
+                        modifier = Modifier.fillMaxWidth()
                     )
                     if (state.usernameError != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = state.usernameError.asString(),
                             color = MaterialTheme.colors.error
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
+                    MyOutlinedTextField(
                         value = state.passwordText,
                         onValueChange = viewModel::onPasswordChange,
-                        visualTransformation = PasswordVisualTransformation(),
-                        placeholder = {
-                            Text(text = stringResource(id = R.string.hint_password))
-                        },
-                        label = {
-                            Text(text = stringResource(id = R.string.hint_password))
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        placeholder = stringResource(id = R.string.hint_password),
+                        modifier = Modifier.fillMaxWidth(),
+                        visualTransformation = PasswordVisualTransformation()
                     )
                     if (state.passwordError != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = state.passwordError.asString(),
                             color = MaterialTheme.colors.error
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                     Button(onClick = viewModel::onLoginClick) {
                         Text(text = stringResource(id = R.string.login))
                     }
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Button(
+                    onClick = {
+                        navigator.navigate(RegisterUserScreenDestination)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(id = R.string.register))
                 }
             }
         }

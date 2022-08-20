@@ -1,11 +1,13 @@
 package com.rpfcoding.myposwithjetpackcompose.data.repository
 
+import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.data.remote.ApiAuthEndpoints
 import com.rpfcoding.myposwithjetpackcompose.data.remote.dto.LoginDto
+import com.rpfcoding.myposwithjetpackcompose.data.remote.dto.RegisterUserDto
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
-import com.rpfcoding.myposwithjetpackcompose.util.Constants.getAuth
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
+import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -32,21 +34,56 @@ class AuthRepositoryImpl @Inject constructor(
 
             Resource.Success(Unit)
         } catch (e: HttpException) {
-            Resource.Error("Invalid username or password.")
+            Resource.Error(UiText.DynamicString(e.response()?.errorBody()?.string() ?: ""))
         } catch (e: IOException) {
-            Resource.Error("Unknown error occurred.")
+            Resource.Error(UiText.StringResource(resId = R.string.unknown_error))
         }
     }
 
     override suspend fun isAuthenticated(token: String): Resource<Unit> {
         return try {
-            api.isAuthenticated(getAuth(token))
+            api.isAuthenticated(token)
 
             Resource.Success(Unit)
         } catch (e: HttpException) {
-            Resource.Error("Unauthorized / Your token expired. Please log in again.")
+            Resource.Error(UiText.DynamicString(e.response()?.errorBody()?.string() ?: ""))
         } catch (e: IOException) {
-            Resource.Error("Unknown error. Please log in again.")
+            Resource.Error(UiText.StringResource(resId = R.string.unknown_error))
+        }
+    }
+
+    override suspend fun register(
+        username: String,
+        password: String,
+        confirmPass: String,
+        firstName: String,
+        middleName: String,
+        lastName: String,
+        email: String
+    ): Resource<Unit> {
+        return try {
+            val result = api.register(
+                RegisterUserDto(
+                    username = username,
+                    password = password,
+                    confirmPassword = confirmPass,
+                    firstName = firstName,
+                    middleName = middleName,
+                    lastName = lastName,
+                    emailAddress = email
+                )
+            )
+
+            // Save response (userId, businessId, token) to sharedPrefs
+            prefRepository.saveUserId(result.userId)
+            prefRepository.saveBusinessId(result.businessId)
+            prefRepository.saveToken(result.token)
+
+            Resource.Success(Unit)
+        } catch (e: HttpException) {
+            Resource.Error(UiText.DynamicString(e.response()?.errorBody()?.string() ?: ""))
+        } catch (e: IOException) {
+            Resource.Error(UiText.StringResource(resId = R.string.unknown_error))
         }
     }
 

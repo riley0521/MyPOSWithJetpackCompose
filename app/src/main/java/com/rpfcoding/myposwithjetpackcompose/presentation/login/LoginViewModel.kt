@@ -82,7 +82,7 @@ class LoginViewModel @Inject constructor(
     }
 
     sealed class LoginEvent {
-        data class ShowError(val msg: String?): LoginEvent()
+        data class ShowError(val msg: UiText?): LoginEvent()
         object NavigateToHome : LoginEvent()
     }
 }

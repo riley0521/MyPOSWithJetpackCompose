@@ -5,10 +5,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
+import com.rpfcoding.myposwithjetpackcompose.util.Constants
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREFERENCES_NAME
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREF_BUSINESS_ID_KEY
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREF_TOKEN_KEY
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREF_USER_ID_KEY
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.getAuth
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -76,7 +78,7 @@ class MyPreferencesRepositoryImpl @Inject constructor(
                 emit(emptyPreferences())
             }.map { pref ->
                 val token = pref[PreferencesKey.tokenKey] ?: ""
-                token
+                getAuth(token)
             }
     }
 }

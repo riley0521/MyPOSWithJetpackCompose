@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
+import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -32,10 +33,15 @@ class SplashViewModel @Inject constructor(
                 .stateIn(viewModelScope)
                 .value
 
-            if(businessId <= 0) {
+            val userId = prefRepository.readUserId()
+                .stateIn(viewModelScope)
+                .value
+
+            if(businessId <= 0 && userId > 0) {
                 _splashEventChannel.send(
                     SplashEvent.NavigateToRegisterBusiness
                 )
+                return@launch
             }
 
             if(token.isNotBlank()) {
@@ -58,7 +64,7 @@ class SplashViewModel @Inject constructor(
     }
 
     sealed class SplashEvent {
-        data class NavigateToLogin(val msg: String?) : SplashEvent()
+        data class NavigateToLogin(val msg: UiText?) : SplashEvent()
         object NavigateToHome : SplashEvent()
         object NavigateToRegisterBusiness : SplashEvent()
     }

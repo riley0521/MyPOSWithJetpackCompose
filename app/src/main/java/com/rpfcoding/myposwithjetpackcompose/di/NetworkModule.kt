@@ -1,6 +1,7 @@
 package com.rpfcoding.myposwithjetpackcompose.di
 
 import com.rpfcoding.myposwithjetpackcompose.data.remote.ApiAuthEndpoints
+import com.rpfcoding.myposwithjetpackcompose.data.remote.ApiBusinessEndpoints
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -9,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -41,5 +43,11 @@ object NetworkModule {
     @Singleton
     fun provideApiAuthEndpoints(
         retrofit: Retrofit
-    ): ApiAuthEndpoints = retrofit.create(ApiAuthEndpoints::class.java)
+    ): ApiAuthEndpoints = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideApiBusinessEndpoints(
+        retrofit: Retrofit
+    ): ApiBusinessEndpoints = retrofit.create()
 }
