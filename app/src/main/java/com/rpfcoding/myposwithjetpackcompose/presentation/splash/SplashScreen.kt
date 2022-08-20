@@ -19,6 +19,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.LoginScreenDestination
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.SplashScreenDestination
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -37,14 +38,18 @@ fun SplashScreen(
         viewModel.splashEventChannel.collectLatest { event ->
             when(event) {
                 SplashViewModel.SplashEvent.NavigateToHome -> {
-                    // TODO: Redirect to homeScreen
+                    // TODO: Navigate to homeScreen
                     Toast.makeText(context, "Navigating to home...", Toast.LENGTH_SHORT).show()
                 }
                 is SplashViewModel.SplashEvent.NavigateToLogin -> {
                     if(event.msg != null) {
                         Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
                     }
+                    navigator.popBackStack(SplashScreenDestination, true)
                     navigator.navigate(LoginScreenDestination)
+                }
+                SplashViewModel.SplashEvent.NavigateToRegisterBusiness -> {
+                    // TODO: Navigate to registerBusiness
                 }
             }
         }

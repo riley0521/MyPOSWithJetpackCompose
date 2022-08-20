@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Relation
 
+@Suppress("unused")
 @Entity
 data class UserWithBusinessPositionAddressesModulesEntity(
     @Embedded val userEntity: UserEntity,

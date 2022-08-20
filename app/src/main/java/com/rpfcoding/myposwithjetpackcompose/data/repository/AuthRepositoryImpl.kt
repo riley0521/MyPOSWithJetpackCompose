@@ -10,7 +10,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class RemoteAuthRepository @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val api: ApiAuthEndpoints,
     private val prefRepository: MyPreferencesRepository
 ) : AuthRepository {
@@ -44,11 +44,7 @@ class RemoteAuthRepository @Inject constructor(
 
             Resource.Success(Unit)
         } catch (e: HttpException) {
-            if (e.code() == 401) {
-                Resource.Error("Unauthorized / Your token expired. Please log in again.")
-            } else {
-                Resource.Error("Unknown error. Please log in again.")
-            }
+            Resource.Error("Unauthorized / Your token expired. Please log in again.")
         } catch (e: IOException) {
             Resource.Error("Unknown error. Please log in again.")
         }

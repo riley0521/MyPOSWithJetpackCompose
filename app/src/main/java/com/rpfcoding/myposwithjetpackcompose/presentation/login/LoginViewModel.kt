@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
+import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -42,7 +44,9 @@ class LoginViewModel @Inject constructor(
 
             state = if(state.usernameText.isBlank()) {
                 state.copy(
-                    usernameError = "Username should not be blank."
+                    usernameError = UiText.StringResource(
+                        resId = R.string.username_not_blank,
+                    )
                 )
             } else {
                 state.copy(
@@ -52,7 +56,9 @@ class LoginViewModel @Inject constructor(
 
             state = if(state.passwordText.isBlank()) {
                 state.copy(
-                    passwordError = "Password should not be blank."
+                    passwordError = UiText.StringResource(
+                        resId = R.string.password_not_blank
+                    )
                 )
             } else {
                 state.copy(

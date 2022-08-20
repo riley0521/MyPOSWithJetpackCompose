@@ -6,4 +6,6 @@
     <string name="login">Login</string>
     <string name="login_success">Logged in successfully!</string>
     <string name="logging_in">Logging in. Please wait...</string>
+    <string name="username_not_blank">Username should not be blank.</string>
+    <string name="password_not_blank">Password should not be blank.</string>
 </resources>

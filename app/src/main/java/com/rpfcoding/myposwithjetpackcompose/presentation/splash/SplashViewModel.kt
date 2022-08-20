@@ -28,6 +28,16 @@ class SplashViewModel @Inject constructor(
                 .stateIn(viewModelScope)
                 .value
 
+            val businessId = prefRepository.readBusinessId()
+                .stateIn(viewModelScope)
+                .value
+
+            if(businessId <= 0) {
+                _splashEventChannel.send(
+                    SplashEvent.NavigateToRegisterBusiness
+                )
+            }
+
             if(token.isNotBlank()) {
                 when (val result = authRepository.isAuthenticated(token)) {
                     is Resource.Error -> {
@@ -50,5 +60,6 @@ class SplashViewModel @Inject constructor(
     sealed class SplashEvent {
         data class NavigateToLogin(val msg: String?) : SplashEvent()
         object NavigateToHome : SplashEvent()
+        object NavigateToRegisterBusiness : SplashEvent()
     }
 }

@@ -57,9 +57,14 @@ fun LoginScreen(
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(id = R.string.logging_in))
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = stringResource(id = R.string.logging_in))
+                }
             }
         } else {
             Box(
@@ -86,7 +91,7 @@ fun LoginScreen(
                     if (state.usernameError != null) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = state.usernameError,
+                            text = state.usernameError.asString(),
                             color = MaterialTheme.colors.error
                         )
                     }
@@ -107,7 +112,7 @@ fun LoginScreen(
                     if (state.passwordError != null) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = state.passwordError,
+                            text = state.passwordError.asString(),
                             color = MaterialTheme.colors.error
                         )
                     }

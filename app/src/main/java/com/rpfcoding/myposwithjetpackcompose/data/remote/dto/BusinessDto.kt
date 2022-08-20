@@ -14,5 +14,7 @@ data class BusinessDto(
     val province: String,
     val city: String,
     val street: String,
-    val currencies: List<CurrencyDto>
+    val currencies: List<CurrencyDto>,
+    val listOfUnit: List<UOMDto>,
+    val sizeTypes: List<SizeTypeDto>
 )

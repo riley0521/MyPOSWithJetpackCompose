@@ -11,7 +11,10 @@ import com.rpfcoding.myposwithjetpackcompose.data.local.entity.*
         PositionEntity::class,
         UserEntity::class,
         BusinessEntity::class,
-        CurrencyEntity::class
+        CurrencyEntity::class,
+        UOMEntity::class,
+        SizeTypeEntity::class,
+        SizeVariantEntity::class
     ],
     version = 1,
     exportSchema = true
@@ -24,4 +27,7 @@ abstract class MyDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun businessDao(): BusinessDao
     abstract fun currencyDao(): CurrencyDao
+    abstract fun uomDao(): UOMDao
+    abstract fun sizeTypeDao(): SizeTypeDao
+    abstract fun sizeVariantDao(): SizeVariantDao
 }
