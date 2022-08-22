@@ -1,20 +1,14 @@
 package com.rpfcoding.myposwithjetpackcompose.domain.repository
 
+import android.net.Uri
+import com.rpfcoding.myposwithjetpackcompose.domain.model.Business
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
+import java.io.File
 
 interface BusinessRepository {
 
     suspend fun create(
-        name: String,
-        facebookUrl: String,
-        instagramUrl: String,
-        twitterUrl: String,
-        email: String,
-        country: String,
-        region: String,
-        province: String,
-        city: String,
-        street: String,
-        landlineNo: String
+        business: Business,
+        selectedImage: File?
     ): Resource<Unit>
 }

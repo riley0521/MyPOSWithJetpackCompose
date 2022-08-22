@@ -3,6 +3,10 @@ package com.rpfcoding.myposwithjetpackcompose.di
 import android.content.Context
 import androidx.room.Room
 import com.rpfcoding.myposwithjetpackcompose.data.local.*
+import com.rpfcoding.myposwithjetpackcompose.data.local.dao.AddressDao
+import com.rpfcoding.myposwithjetpackcompose.data.local.dao.ModuleDao
+import com.rpfcoding.myposwithjetpackcompose.data.local.dao.PositionDao
+import com.rpfcoding.myposwithjetpackcompose.data.local.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -9,7 +9,7 @@ data class UserDto(
     val emailAddress: String,
     val isBusinessOwner: Boolean,
     val isActive: Boolean,
-    val business: BusinessDto,
+    val business: BusinessDto? = null,
     val position: PositionDto? = null,
     val addresses: List<AddressDto>,
     val modules: List<ModuleDto>,

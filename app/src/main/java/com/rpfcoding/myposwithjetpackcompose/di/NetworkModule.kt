@@ -1,7 +1,7 @@
 package com.rpfcoding.myposwithjetpackcompose.di
 
-import com.rpfcoding.myposwithjetpackcompose.data.remote.ApiAuthEndpoints
-import com.rpfcoding.myposwithjetpackcompose.data.remote.ApiBusinessEndpoints
+import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiAuthEndpoints
+import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiBusinessEndpoints
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides

@@ -12,4 +12,7 @@ interface MyPreferencesRepository {
 
     suspend fun saveToken(token: String)
     fun readToken(): Flow<String>
+
+    suspend fun saveIsInfoDownloaded(value: Boolean)
+    fun readIsInfoDownloaded(): Flow<Boolean>
 }

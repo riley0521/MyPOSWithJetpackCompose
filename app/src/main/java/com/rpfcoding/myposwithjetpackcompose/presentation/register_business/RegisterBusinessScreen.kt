@@ -1,12 +1,17 @@
 package com.rpfcoding.myposwithjetpackcompose.presentation.register_business
 
+import android.Manifest
+import android.net.Uri
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,18 +20,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.google.accompanist.permissions.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.presentation.common.MyOutlinedTextField
 import com.rpfcoding.myposwithjetpackcompose.presentation.common.MySpinner
-import com.rpfcoding.myposwithjetpackcompose.util.Constants
-import com.rpfcoding.myposwithjetpackcompose.util.Constants.countries
 import kotlinx.coroutines.flow.collectLatest
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import java.io.File
 
+@ExperimentalPermissionsApi
 @Destination
 @Composable
 fun RegisterBusinessScreen(
@@ -44,7 +55,7 @@ fun RegisterBusinessScreen(
         viewModel.registerBusinessEvent.collectLatest { event ->
             when (event) {
                 RegisterBusinessViewModel.RegisterBusinessEvent.NavigateToHome -> {
-                    // TODO
+                    Toast.makeText(context, "Navigating to home...", Toast.LENGTH_SHORT).show()
                 }
                 is RegisterBusinessViewModel.RegisterBusinessEvent.ShowError -> {
                     Toast.makeText(context, event.msg?.asString(context), Toast.LENGTH_SHORT).show()
@@ -52,6 +63,27 @@ fun RegisterBusinessScreen(
             }
         }
     }
+
+    val galleryPermissionState = rememberPermissionState(
+        permission = Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+
+                val file = File(context.cacheDir, "myImage.jpg")
+                file.createNewFile()
+                val inputStream = context.contentResolver.openInputStream(uri)
+                file.outputStream().use {
+                    inputStream?.copyTo(it)
+                }
+
+                viewModel.onImageSelect(file.toUri())
+            }
+        }
+    )
 
     if (state.isLoading) {
         Box(
@@ -70,15 +102,29 @@ fun RegisterBusinessScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.End,
         ) {
-            Image(
-                modifier = Modifier
-                    .size(120.dp)
-                    .clickable {
-                        Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show()
-                    }.align(Alignment.CenterHorizontally),
-                imageVector = Icons.Filled.Person,
-                contentDescription = stringResource(id = R.string.person)
-            )
+            if (viewModel.selectedImageUri == null) {
+                Image(
+                    modifier = getImageModifier(
+                        galleryPermissionState = galleryPermissionState,
+                        onImagePick = {
+                            imagePicker.launch("image/*")
+                        }
+                    ).align(Alignment.CenterHorizontally),
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = stringResource(id = R.string.person)
+                )
+            } else {
+                AsyncImage(
+                    model = viewModel.selectedImageUri,
+                    contentDescription = "Selected image",
+                    modifier = getImageModifier(
+                        galleryPermissionState = galleryPermissionState,
+                        onImagePick = {
+                            imagePicker.launch("image/*")
+                        }
+                    ).align(Alignment.CenterHorizontally)
+                )
+            }
             MyOutlinedTextField(
                 value = state.nameText,
                 onValueChange = viewModel::onNameChange,
@@ -219,3 +265,23 @@ fun RegisterBusinessScreen(
         }
     }
 }
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun getImageModifier(
+    galleryPermissionState: PermissionState,
+    onImagePick: () -> Unit
+): Modifier = Modifier
+    .size(120.dp)
+    .clickable {
+        when {
+            galleryPermissionState.status.isGranted -> {
+                onImagePick()
+            }
+            !galleryPermissionState.status.isGranted -> {
+                galleryPermissionState.launchPermissionRequest()
+            }
+            galleryPermissionState.status.shouldShowRationale -> Unit
+            !galleryPermissionState.status.isGranted && !galleryPermissionState.status.shouldShowRationale -> Unit
+        }
+    }

@@ -13,13 +13,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.presentation.common.MyOutlinedTextField
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.LoginScreenDestination
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterBusinessScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterUserScreenDestination
 import kotlinx.coroutines.flow.collectLatest
 
+@ExperimentalPermissionsApi
 @Destination
 @Composable
 fun LoginScreen(
@@ -38,9 +42,15 @@ fun LoginScreen(
             when (event) {
                 LoginViewModel.LoginEvent.NavigateToHome -> {
                     Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
+
+                    navigator.popBackStack(LoginScreenDestination, true)
                 }
                 is LoginViewModel.LoginEvent.ShowError -> {
                     Toast.makeText(context, event.msg?.asString(context), Toast.LENGTH_SHORT).show()
+                }
+                LoginViewModel.LoginEvent.NavigateToRegisterBusiness -> {
+                    navigator.popBackStack(LoginScreenDestination, true)
+                    navigator.navigate(RegisterBusinessScreenDestination)
                 }
             }
 

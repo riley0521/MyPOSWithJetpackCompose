@@ -2,6 +2,7 @@ package com.rpfcoding.myposwithjetpackcompose.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.rpfcoding.myposwithjetpackcompose.data.local.dao.*
 import com.rpfcoding.myposwithjetpackcompose.data.local.entity.*
 
 @Database(

@@ -2,6 +2,7 @@ package com.rpfcoding.myposwithjetpackcompose.presentation.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
@@ -16,19 +17,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val prefRepository: MyPreferencesRepository,
-    private val authRepository: AuthRepository
+    private val prefRepository: MyPreferencesRepository
 ) : ViewModel() {
 
     private val _splashEventChannel = Channel<SplashEvent>()
     val splashEventChannel = _splashEventChannel.receiveAsFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            val token = prefRepository.readToken()
-                .stateIn(viewModelScope)
-                .value
-
+        viewModelScope.launch {
             val businessId = prefRepository.readBusinessId()
                 .stateIn(viewModelScope)
                 .value
@@ -44,19 +40,8 @@ class SplashViewModel @Inject constructor(
                 return@launch
             }
 
-            if(token.isNotBlank()) {
-                when (val result = authRepository.isAuthenticated(token)) {
-                    is Resource.Error -> {
-                        _splashEventChannel.send(
-                            SplashEvent.NavigateToLogin(
-                                result.message
-                            )
-                        )
-                    }
-                    is Resource.Success -> {
-                        _splashEventChannel.send(SplashEvent.NavigateToHome)
-                    }
-                }
+            if(businessId > 0 && userId > 0) {
+                _splashEventChannel.send(SplashEvent.NavigateToHome)
             } else {
                 _splashEventChannel.send(SplashEvent.NavigateToLogin(null))
             }

@@ -1,4 +1,4 @@
-package com.rpfcoding.myposwithjetpackcompose.data.local
+package com.rpfcoding.myposwithjetpackcompose.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

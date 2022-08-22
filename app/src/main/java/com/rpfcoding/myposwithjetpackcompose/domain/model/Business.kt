@@ -2,7 +2,6 @@ package com.rpfcoding.myposwithjetpackcompose.domain.model
 
 data class Business(
     val name: String,
-    val businessLogoUrl: String,
     val facebookUrl: String,
     val instagramUrl: String,
     val twitterUrl: String,
@@ -13,5 +12,8 @@ data class Business(
     val province: String,
     val city: String,
     val street: String,
-    val currencies: List<Currency>
+    val businessLogoUrl: String = "",
+    val currencies: List<Currency> = emptyList(),
+    val listOfUnit: List<UnitOfMeasurement> = emptyList(),
+    val sizeTypes: List<SizeType> = emptyList()
 )

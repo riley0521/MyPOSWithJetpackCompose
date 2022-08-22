@@ -1,6 +1,6 @@
 package com.rpfcoding.myposwithjetpackcompose.domain.model
 
-data class Module(
+data class SizeVariant(
     val name: String,
-    val moduleId: Int = 0
+    val sizeVariantId: Int = 0
 )

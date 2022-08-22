@@ -1,14 +1,23 @@
 package com.rpfcoding.myposwithjetpackcompose.presentation.register_business
 
+import android.app.Application
+import android.net.Uri
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.*
+import com.google.gson.Gson
 import com.rpfcoding.myposwithjetpackcompose.R
+import com.rpfcoding.myposwithjetpackcompose.data.worker.CreateBusinessWorker
+import com.rpfcoding.myposwithjetpackcompose.data.worker.DownloadUserInfoWorker
+import com.rpfcoding.myposwithjetpackcompose.domain.model.Business
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.BusinessRepository
-import com.rpfcoding.myposwithjetpackcompose.util.Resource
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_IMG
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_OBJ
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.WORKER_CREATE_BUSINESS
 import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -18,14 +27,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterBusinessViewModel @Inject constructor(
-    private val repository: BusinessRepository
+    private val repository: BusinessRepository,
+    private val application: Application
 ) : ViewModel() {
 
     var state by mutableStateOf(RegisterBusinessState())
         private set
 
+    var selectedImageUri by mutableStateOf<Uri?>(null)
+        private set
+
+    private val workManager = WorkManager.getInstance(application)
+
     private val _registerBusinessEventChannel = Channel<RegisterBusinessEvent>()
     val registerBusinessEvent = _registerBusinessEventChannel.receiveAsFlow()
+
+    fun onImageSelect(uri: Uri) {
+        selectedImageUri = uri
+    }
 
     fun onNameChange(name: String) {
         state = state.copy(nameText = name)
@@ -110,34 +129,62 @@ class RegisterBusinessViewModel @Inject constructor(
                 state.landlineNoError == null &&
                 state.emailError == null
             ) {
-                when (val result = repository.create(
-                    name = state.nameText,
-                    facebookUrl = state.facebookUrlText,
-                    instagramUrl = state.instagramUrlText,
-                    twitterUrl = state.twitterUrlText,
-                    email = state.emailText,
-                    country = state.countryText,
-                    region = state.regionText,
-                    province = state.provinceText,
-                    city = state.cityText,
-                    street = state.streetText,
-                    landlineNo = state.landlineNoText
-                )) {
-                    is Resource.Error -> {
-                        _registerBusinessEventChannel.send(
-                            RegisterBusinessEvent.ShowError(result.message)
-                        )
-                    }
-                    is Resource.Success -> {
-                        _registerBusinessEventChannel.send(
-                            RegisterBusinessEvent.NavigateToHome
-                        )
-                    }
-                }
+                launchCreateBusinessWorker()
+
+                _registerBusinessEventChannel.send(RegisterBusinessEvent.NavigateToHome)
             }
 
             state = state.copy(isLoading = false)
         }
+    }
+
+    private fun launchCreateBusinessWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(true)
+            .build()
+
+        val businessObj = Business(
+            name = state.nameText,
+            facebookUrl = state.facebookUrlText,
+            instagramUrl = state.instagramUrlText,
+            twitterUrl = state.twitterUrlText,
+            email = state.emailText,
+            country = state.countryText,
+            region = state.regionText,
+            province = state.provinceText,
+            city = state.cityText,
+            street = state.streetText,
+            landlineNo = state.landlineNoText,
+            businessLogoUrl = "",
+            currencies = emptyList()
+        )
+
+        val businessStr = Gson().toJson(businessObj)
+
+        val firstWorker = OneTimeWorkRequestBuilder<CreateBusinessWorker>()
+            .setConstraints(constraints)
+            .setInputData(
+                workDataOf(
+                    WK_BUSINESS_OBJ to businessStr,
+                    WK_BUSINESS_IMG to selectedImageUri.toString()
+                )
+            )
+            .build()
+
+        var continuation = workManager.beginUniqueWork(
+            WORKER_CREATE_BUSINESS,
+            ExistingWorkPolicy.KEEP,
+            firstWorker
+        )
+
+        val secondWorker = OneTimeWorkRequestBuilder<DownloadUserInfoWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        continuation = continuation.then(secondWorker)
+
+        continuation.enqueue()
     }
 
     private fun verifyLocation() {

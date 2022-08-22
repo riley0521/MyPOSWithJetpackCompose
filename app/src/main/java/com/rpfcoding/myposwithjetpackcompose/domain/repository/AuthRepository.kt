@@ -17,4 +17,6 @@ interface AuthRepository {
         lastName: String,
         email: String
     ): Resource<Unit>
+
+    suspend fun downloadInfo(token: String): Resource<Unit>
 }

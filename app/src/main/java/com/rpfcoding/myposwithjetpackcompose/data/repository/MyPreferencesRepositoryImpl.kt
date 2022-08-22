@@ -5,12 +5,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
-import com.rpfcoding.myposwithjetpackcompose.util.Constants
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREFERENCES_NAME
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREF_BUSINESS_ID_KEY
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREF_IS_INFO_DOWNLOADED_KEY
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREF_TOKEN_KEY
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.PREF_USER_ID_KEY
-import com.rpfcoding.myposwithjetpackcompose.util.Constants.getAuth
+import com.rpfcoding.myposwithjetpackcompose.util.getAuth
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -27,6 +27,7 @@ class MyPreferencesRepositoryImpl @Inject constructor(
         val userIdKey = intPreferencesKey(name = PREF_USER_ID_KEY)
         val businessIdKey = intPreferencesKey(name = PREF_BUSINESS_ID_KEY)
         val tokenKey = stringPreferencesKey(name = PREF_TOKEN_KEY)
+        val isInfoDownloadedKey = booleanPreferencesKey(name = PREF_IS_INFO_DOWNLOADED_KEY)
     }
 
     private val dataStore = context.dataStore
@@ -79,6 +80,22 @@ class MyPreferencesRepositoryImpl @Inject constructor(
             }.map { pref ->
                 val token = pref[PreferencesKey.tokenKey] ?: ""
                 getAuth(token)
+            }
+    }
+
+    override suspend fun saveIsInfoDownloaded(value: Boolean) {
+        dataStore.edit { pref ->
+            pref[PreferencesKey.isInfoDownloadedKey] = value
+        }
+    }
+
+    override fun readIsInfoDownloaded(): Flow<Boolean> {
+        return dataStore
+            .data
+            .catch {
+                emit(emptyPreferences())
+            }.map { pref ->
+                pref[PreferencesKey.isInfoDownloadedKey] ?: false
             }
     }
 }

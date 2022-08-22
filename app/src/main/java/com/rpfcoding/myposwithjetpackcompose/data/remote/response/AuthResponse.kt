@@ -1,4 +1,4 @@
-package com.rpfcoding.myposwithjetpackcompose.data.remote.dto
+package com.rpfcoding.myposwithjetpackcompose.data.remote.response
 
 data class AuthResponse(
     val userId: Int,
