@@ -1,9 +1,15 @@
 package com.rpfcoding.myposwithjetpackcompose.util
 
 import android.content.Context
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.rpfcoding.myposwithjetpackcompose.R
+import com.rpfcoding.myposwithjetpackcompose.domain.model.Module
+import com.rpfcoding.myposwithjetpackcompose.presentation.common.MenuItem
+import com.rpfcoding.myposwithjetpackcompose.presentation.menu.MenuData
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.POS_CHANNEL_NAME
 
 object Constants {
@@ -37,6 +43,64 @@ object Constants {
         "Philippines",
         "Canada",
         "Vietnam"
+    )
+
+    val moduleItems = listOf(
+        MenuData(
+            2,
+            title = "Add Ons",
+            icon = Icons.Filled.Add,
+        ),
+        MenuData(
+            5,
+            title = "Currencies",
+            icon = Icons.Filled.Money,
+        ),
+        MenuData(
+            6,
+            title = "Expenses",
+            icon = Icons.Filled.Outbound,
+        ),
+        MenuData(
+            7,
+            title = "Inventories",
+            icon = Icons.Filled.Inventory,
+        ),
+        MenuData(
+            8,
+            title = "Positions",
+            icon = Icons.Filled.Person,
+        ),
+        MenuData(
+            9,
+            title = "Products",
+            icon = Icons.Filled.Add,
+        ),
+        MenuData(
+            10,
+            title = "Product Groups",
+            icon = Icons.Filled.Group,
+        ),
+        MenuData(
+            11,
+            title = "Sales",
+            icon = Icons.Filled.Store,
+        ),
+        MenuData(
+            13,
+            title = "Size Types",
+            icon = Icons.Filled.Inventory2,
+        ),
+        MenuData(
+            15,
+            title = "Unit of Measurements",
+            icon = Icons.Filled.FormatSize,
+        ),
+        MenuData(
+            16,
+            title = "Manage Users",
+            icon = Icons.Filled.Person,
+        )
     )
 
 }

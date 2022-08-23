@@ -18,6 +18,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.presentation.common.MyOutlinedTextField
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.HomeScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.LoginScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterBusinessScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterUserScreenDestination
@@ -41,9 +42,8 @@ fun LoginScreen(
         viewModel.loginEvent.collectLatest { event ->
             when (event) {
                 LoginViewModel.LoginEvent.NavigateToHome -> {
-                    Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
-
                     navigator.popBackStack(LoginScreenDestination, true)
+                    navigator.navigate(HomeScreenDestination)
                 }
                 is LoginViewModel.LoginEvent.ShowError -> {
                     Toast.makeText(context, event.msg?.asString(context), Toast.LENGTH_SHORT).show()

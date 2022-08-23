@@ -42,4 +42,11 @@
     <string name="city_required">City is required.</string>
     <string name="landline_invalid">Landline is in invalid format.</string>
     <string name="person">Person</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="menu">Menu</string>
+    <string name="settings">Settings</string>
+    <string name="today_sale">Today\'s Sale</string>
+    <string name="weekly_sale">Weekly Sale</string>
+    <string name="monthly_sale">Monthly Sale</string>
+    <string name="yearly_sale">Yearly Sale</string>
 </resources>

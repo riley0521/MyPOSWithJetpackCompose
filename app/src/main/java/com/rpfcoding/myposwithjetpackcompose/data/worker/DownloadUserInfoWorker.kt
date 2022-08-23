@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import com.rpfcoding.myposwithjetpackcompose.util.Constants
@@ -47,7 +48,8 @@ class DownloadUserInfoWorker @AssistedInject constructor(
                 is Resource.Error -> {
                     makeStatusNotification(
                         DOWNLOAD_USER_INFORMATION_TITLE,
-                        result.message?.asString(applicationContext) ?: "",
+                        result.message?.asString(applicationContext)
+                            ?: applicationContext.getString(R.string.unknown_error),
                         NOTIFICATION_DOWNLOAD_USER_INFO_ID,
                         ctx = applicationContext
                     )

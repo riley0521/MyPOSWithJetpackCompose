@@ -19,6 +19,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.HomeScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.LoginScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterBusinessScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.SplashScreenDestination
@@ -41,8 +42,8 @@ fun SplashScreen(
         viewModel.splashEventChannel.collectLatest { event ->
             when(event) {
                 SplashViewModel.SplashEvent.NavigateToHome -> {
-                    // TODO: Navigate to homeScreen
-                    Toast.makeText(context, "Navigating to home...", Toast.LENGTH_SHORT).show()
+                    navigator.popBackStack(SplashScreenDestination, true)
+                    navigator.navigate(HomeScreenDestination)
                 }
                 is SplashViewModel.SplashEvent.NavigateToLogin -> {
                     if(event.msg != null) {

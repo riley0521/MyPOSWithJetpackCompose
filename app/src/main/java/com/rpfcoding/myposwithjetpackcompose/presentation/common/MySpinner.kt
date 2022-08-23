@@ -10,15 +10,20 @@ import com.rpfcoding.myposwithjetpackcompose.util.Constants.countries
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MySpinner(
+    title: String,
+    items: List<String>,
     onItemSelected: (String) -> Unit
 ) {
+    if(items.isEmpty()) {
+        return
+    }
 
     var expanded by remember {
         mutableStateOf(false)
     }
 
     var selectedOptionText by remember {
-        mutableStateOf(countries[0])
+        mutableStateOf(items[0])
     }
 
     ExposedDropdownMenuBox(
@@ -32,7 +37,7 @@ fun MySpinner(
             readOnly = true,
             value = selectedOptionText,
             onValueChange = {},
-            label = { Text(text = "Countries") },
+            label = { Text(text = title) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
@@ -41,13 +46,13 @@ fun MySpinner(
         )
 
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            countries.forEach { country ->
+            items.forEach { item ->
                 DropdownMenuItem(onClick = {
-                    selectedOptionText = country
+                    selectedOptionText = item
                     expanded = false
-                    onItemSelected(country)
+                    onItemSelected(item)
                 }) {
-                    Text(text = country)
+                    Text(text = item)
                 }
             }
         }

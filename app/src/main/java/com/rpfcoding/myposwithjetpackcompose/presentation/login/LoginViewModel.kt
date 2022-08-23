@@ -83,9 +83,8 @@ class LoginViewModel @Inject constructor(
                         _loginEventChannel.send(LoginEvent.ShowError(result.message))
                     }
                     is Resource.Success -> {
-                        launchDownloadUserInfoWorker()
-
                         if (isFullyRegistered()) {
+                            launchDownloadUserInfoWorker()
                             _loginEventChannel.send(LoginEvent.NavigateToHome)
                         } else {
                             _loginEventChannel.send(LoginEvent.NavigateToRegisterBusiness)

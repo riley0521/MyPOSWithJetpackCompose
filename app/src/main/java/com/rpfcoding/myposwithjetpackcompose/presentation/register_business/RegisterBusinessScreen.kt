@@ -18,12 +18,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.work.WorkInfo
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.*
 import com.ramcosta.composedestinations.annotation.Destination
@@ -35,6 +37,10 @@ import kotlinx.coroutines.flow.collectLatest
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.HomeScreenDestination
+import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterBusinessScreenDestination
+import com.rpfcoding.myposwithjetpackcompose.util.Constants
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.countries
 import java.io.File
 
 @ExperimentalPermissionsApi
@@ -51,16 +57,16 @@ fun RegisterBusinessScreen(
 
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = viewModel.registerBusinessEvent) {
-        viewModel.registerBusinessEvent.collectLatest { event ->
-            when (event) {
-                RegisterBusinessViewModel.RegisterBusinessEvent.NavigateToHome -> {
-                    Toast.makeText(context, "Navigating to home...", Toast.LENGTH_SHORT).show()
-                }
-                is RegisterBusinessViewModel.RegisterBusinessEvent.ShowError -> {
-                    Toast.makeText(context, event.msg?.asString(context), Toast.LENGTH_SHORT).show()
-                }
-            }
+    viewModel.outputWorkInfoList.observe(LocalLifecycleOwner.current) { workInfoList ->
+        if(workInfoList.isEmpty()) {
+            return@observe
+        }
+
+        val worker = workInfoList[0]
+
+        if(worker.state.isFinished) {
+            navigator.popBackStack(RegisterBusinessScreenDestination, true)
+            navigator.navigate(HomeScreenDestination)
         }
     }
 
@@ -174,6 +180,8 @@ fun RegisterBusinessScreen(
                 )
             }
             MySpinner(
+                title = "Countries",
+                items = countries,
                 onItemSelected = viewModel::onCountryChange
             )
             if (state.countryError != null) {

@@ -6,6 +6,7 @@ import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.*
@@ -39,8 +40,8 @@ class RegisterBusinessViewModel @Inject constructor(
 
     private val workManager = WorkManager.getInstance(application)
 
-    private val _registerBusinessEventChannel = Channel<RegisterBusinessEvent>()
-    val registerBusinessEvent = _registerBusinessEventChannel.receiveAsFlow()
+    val outputWorkInfoList: LiveData<List<WorkInfo>> = workManager
+        .getWorkInfosByTagLiveData(WORKER_CREATE_BUSINESS)
 
     fun onImageSelect(uri: Uri) {
         selectedImageUri = uri
@@ -130,8 +131,6 @@ class RegisterBusinessViewModel @Inject constructor(
                 state.emailError == null
             ) {
                 launchCreateBusinessWorker()
-
-                _registerBusinessEventChannel.send(RegisterBusinessEvent.NavigateToHome)
             }
 
             state = state.copy(isLoading = false)
@@ -163,6 +162,7 @@ class RegisterBusinessViewModel @Inject constructor(
         val businessStr = Gson().toJson(businessObj)
 
         val firstWorker = OneTimeWorkRequestBuilder<CreateBusinessWorker>()
+            .addTag(WORKER_CREATE_BUSINESS)
             .setConstraints(constraints)
             .setInputData(
                 workDataOf(

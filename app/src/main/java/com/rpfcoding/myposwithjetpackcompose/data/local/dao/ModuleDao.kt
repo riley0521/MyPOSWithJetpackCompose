@@ -12,7 +12,7 @@ interface ModuleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(modules: List<ModuleEntity>)
 
-    @Query("SELECT * FROM tbl_modules WHERE moduleId = :userId")
+    @Query("SELECT * FROM tbl_modules WHERE userId = :userId")
     suspend fun getByUserId(userId: Int): List<ModuleEntity>
 
     @Query("DELETE FROM tbl_modules")

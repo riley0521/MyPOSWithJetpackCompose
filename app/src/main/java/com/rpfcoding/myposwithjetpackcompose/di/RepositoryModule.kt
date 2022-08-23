@@ -3,8 +3,10 @@ package com.rpfcoding.myposwithjetpackcompose.di
 import com.rpfcoding.myposwithjetpackcompose.data.repository.MyPreferencesRepositoryImpl
 import com.rpfcoding.myposwithjetpackcompose.data.repository.AuthRepositoryImpl
 import com.rpfcoding.myposwithjetpackcompose.data.repository.BusinessRepositoryImpl
+import com.rpfcoding.myposwithjetpackcompose.data.repository.ModuleRepositoryImpl
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.BusinessRepository
+import com.rpfcoding.myposwithjetpackcompose.domain.repository.ModuleRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import dagger.Binds
 import dagger.Module
@@ -32,4 +34,9 @@ abstract class RepositoryModule {
     abstract fun bindMyPreferencesRepository(
         myPreferencesRepositoryImpl: MyPreferencesRepositoryImpl
     ): MyPreferencesRepository
+
+    @Binds
+    abstract fun bindModuleRepository(
+        moduleRepositoryImpl: ModuleRepositoryImpl
+    ): ModuleRepository
 }
