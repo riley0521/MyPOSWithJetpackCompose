@@ -15,7 +15,11 @@ import com.rpfcoding.myposwithjetpackcompose.data.local.entity.*
         CurrencyEntity::class,
         UOMEntity::class,
         SizeTypeEntity::class,
-        SizeVariantEntity::class
+        SizeVariantEntity::class,
+        ProductGroupEntity::class,
+        ProductEntity::class,
+        InventoryEntity::class,
+        AddOnEntity::class
     ],
     version = 1,
     exportSchema = true
@@ -31,4 +35,8 @@ abstract class MyDatabase : RoomDatabase() {
     abstract fun uomDao(): UOMDao
     abstract fun sizeTypeDao(): SizeTypeDao
     abstract fun sizeVariantDao(): SizeVariantDao
+    abstract fun productGroupDao(): ProductGroupDao
+    abstract fun productDao(): ProductDao
+    abstract fun inventoryDao(): InventoryDao
+    abstract fun addOnDao(): AddOnDao
 }

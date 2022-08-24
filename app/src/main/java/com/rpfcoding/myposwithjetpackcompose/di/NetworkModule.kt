@@ -2,6 +2,8 @@ package com.rpfcoding.myposwithjetpackcompose.di
 
 import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiAuthEndpoints
 import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiBusinessEndpoints
+import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiProductEndpoints
+import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiUserEndpoints
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -50,4 +52,16 @@ object NetworkModule {
     fun provideApiBusinessEndpoints(
         retrofit: Retrofit
     ): ApiBusinessEndpoints = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideApiProductEndpoints(
+        retrofit: Retrofit
+    ): ApiProductEndpoints = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideApiUserEndpoints(
+        retrofit: Retrofit
+    ): ApiUserEndpoints = retrofit.create()
 }

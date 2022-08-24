@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.rpfcoding.myposwithjetpackcompose.R
+import com.rpfcoding.myposwithjetpackcompose.data.worker.DownloadProductGroupsWorker
+import com.rpfcoding.myposwithjetpackcompose.data.worker.DownloadProductsWorker
 import com.rpfcoding.myposwithjetpackcompose.data.worker.DownloadUserInfoWorker
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
@@ -15,7 +17,6 @@ import com.rpfcoding.myposwithjetpackcompose.util.Constants.WORKER_DOWNLOAD_USER
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
 import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -53,29 +54,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isLoading = true)
 
-            state = if (state.usernameText.isBlank()) {
-                state.copy(
-                    usernameError = UiText.StringResource(
-                        resId = R.string.username_not_blank,
-                    )
-                )
-            } else {
-                state.copy(
-                    usernameError = null
-                )
-            }
-
-            state = if (state.passwordText.isBlank()) {
-                state.copy(
-                    passwordError = UiText.StringResource(
-                        resId = R.string.password_not_blank
-                    )
-                )
-            } else {
-                state.copy(
-                    passwordError = null
-                )
-            }
+            verifyUserInput()
 
             if (state.usernameError == null && state.passwordError == null) {
                 when (val result = authRepository.login(state.usernameText, state.passwordText)) {
@@ -97,6 +76,32 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun verifyUserInput() {
+        state = if (state.usernameText.isBlank()) {
+            state.copy(
+                usernameError = UiText.StringResource(
+                    resId = R.string.username_not_blank,
+                )
+            )
+        } else {
+            state.copy(
+                usernameError = null
+            )
+        }
+
+        state = if (state.passwordText.isBlank()) {
+            state.copy(
+                passwordError = UiText.StringResource(
+                    resId = R.string.password_not_blank
+                )
+            )
+        } else {
+            state.copy(
+                passwordError = null
+            )
+        }
+    }
+
     private suspend fun isFullyRegistered(): Boolean {
         val userId = prefRepository.readUserId().stateIn(viewModelScope).value
         val businessId = prefRepository.readBusinessId().stateIn(viewModelScope).value
@@ -110,15 +115,29 @@ class LoginViewModel @Inject constructor(
             .setRequiresBatteryNotLow(true)
             .build()
 
-        val worker = OneTimeWorkRequestBuilder<DownloadUserInfoWorker>()
+        val firstWorker = OneTimeWorkRequestBuilder<DownloadUserInfoWorker>()
             .setConstraints(constraints)
             .build()
 
-        workManager.enqueueUniqueWork(
+        var continuation = workManager.beginUniqueWork(
             WORKER_DOWNLOAD_USER_INFORMATION,
             ExistingWorkPolicy.KEEP,
-            worker
+            firstWorker
         )
+
+        val secondWorker = OneTimeWorkRequestBuilder<DownloadProductGroupsWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        continuation = continuation.then(secondWorker)
+
+        val thirdWorker = OneTimeWorkRequestBuilder<DownloadProductsWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        continuation = continuation.then(thirdWorker)
+
+        continuation.enqueue()
     }
 
     sealed class LoginEvent {

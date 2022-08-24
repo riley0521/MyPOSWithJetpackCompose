@@ -45,7 +45,8 @@ class CreateBusinessWorker @AssistedInject constructor(
             UPLOADING_BUSINESS_TITLE,
             "Uploading...",
             NOTIFICATION_UPLOAD_BUSINESS_INFO_ID,
-            applicationContext
+            applicationContext,
+            true
         )
 
         var file: File? = null
@@ -66,7 +67,8 @@ class CreateBusinessWorker @AssistedInject constructor(
                     result.message?.asString(applicationContext)
                         ?: applicationContext.getString(R.string.unknown_error),
                     NOTIFICATION_UPLOAD_BUSINESS_INFO_ID,
-                    applicationContext
+                    applicationContext,
+                    false
                 )
                 Result.failure()
             }
@@ -75,7 +77,8 @@ class CreateBusinessWorker @AssistedInject constructor(
                     UPLOADING_BUSINESS_TITLE,
                     "Upload successful!",
                     NOTIFICATION_UPLOAD_BUSINESS_INFO_ID,
-                    applicationContext
+                    applicationContext,
+                    false
                 )
                 Result.success()
             }

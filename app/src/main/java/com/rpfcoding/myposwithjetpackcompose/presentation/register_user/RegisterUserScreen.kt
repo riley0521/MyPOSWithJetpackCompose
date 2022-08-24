@@ -10,12 +10,18 @@ import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -75,9 +81,27 @@ fun RegisterUserScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.End,
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Create",
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Start)
+            )
+            Text(
+                text = "Account",
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Start)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             MyOutlinedTextField(
                 value = state.usernameText,
                 onValueChange = viewModel::onUsernameChange,
+                leadingIcon = Icons.Filled.VerifiedUser,
                 placeholder = stringResource(id = R.string.hint_username),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -90,6 +114,7 @@ fun RegisterUserScreen(
             MyOutlinedTextField(
                 value = state.passwordText,
                 onValueChange = viewModel::onPasswordChange,
+                leadingIcon = Icons.Filled.Password,
                 placeholder = stringResource(id = R.string.hint_password),
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
@@ -103,6 +128,7 @@ fun RegisterUserScreen(
             MyOutlinedTextField(
                 value = state.confirmPassText,
                 onValueChange = viewModel::onConfirmPassChange,
+                leadingIcon = Icons.Filled.Password,
                 placeholder = stringResource(id = R.string.hint_confirm_password),
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
@@ -116,6 +142,7 @@ fun RegisterUserScreen(
             MyOutlinedTextField(
                 value = state.firstNameText,
                 onValueChange = viewModel::onFirstNameChange,
+                leadingIcon = Icons.Filled.Person,
                 placeholder = stringResource(id = R.string.hint_first_name),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -128,6 +155,7 @@ fun RegisterUserScreen(
             MyOutlinedTextField(
                 value = state.middleNameText,
                 onValueChange = viewModel::onMiddleNameChange,
+                leadingIcon = Icons.Filled.Person,
                 placeholder = stringResource(id = R.string.hint_middle_name),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -140,6 +168,7 @@ fun RegisterUserScreen(
             MyOutlinedTextField(
                 value = state.lastNameText,
                 onValueChange = viewModel::onLastNameChange,
+                leadingIcon = Icons.Filled.Person,
                 placeholder = stringResource(id = R.string.hint_last_name),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -152,6 +181,7 @@ fun RegisterUserScreen(
             MyOutlinedTextField(
                 value = state.emailText,
                 onValueChange = viewModel::onEmailChange,
+                leadingIcon = Icons.Filled.Email,
                 placeholder = stringResource(id = R.string.hint_email),
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOpts = KeyboardOptions(keyboardType = KeyboardType.Email)

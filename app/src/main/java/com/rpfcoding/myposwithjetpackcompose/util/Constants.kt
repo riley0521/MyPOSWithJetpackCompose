@@ -10,6 +10,7 @@ import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.domain.model.Module
 import com.rpfcoding.myposwithjetpackcompose.presentation.common.MenuItem
 import com.rpfcoding.myposwithjetpackcompose.presentation.menu.MenuData
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.BASE_URL
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.POS_CHANNEL_NAME
 
 object Constants {
@@ -27,8 +28,11 @@ object Constants {
 
     const val NOTIFICATION_DOWNLOAD_USER_INFO_ID = 241
     const val NOTIFICATION_UPLOAD_BUSINESS_INFO_ID = 242
+    const val NOTIFICATION_DOWNLOAD_PRODUCT_ID = 243
 
     const val DOWNLOAD_USER_INFORMATION_TITLE = "Download User Information"
+    const val DOWNLOAD_PRODUCT_GROUPS_TITLE = "Download Product Groups"
+    const val DOWNLOAD_PRODUCT_TITLE = "Download Products Information"
     const val UPLOADING_BUSINESS_TITLE = "Upload Business Information"
 
     const val WORKER_DOWNLOAD_USER_INFORMATION = "worker_download_user_information"
@@ -47,39 +51,14 @@ object Constants {
 
     val moduleItems = listOf(
         MenuData(
-            2,
-            title = "Add Ons",
-            icon = Icons.Filled.Add,
-        ),
-        MenuData(
-            5,
-            title = "Currencies",
-            icon = Icons.Filled.Money,
-        ),
-        MenuData(
-            6,
-            title = "Expenses",
-            icon = Icons.Filled.Outbound,
-        ),
-        MenuData(
-            7,
-            title = "Inventories",
+            9,
+            title = "Products",
             icon = Icons.Filled.Inventory,
         ),
         MenuData(
-            8,
-            title = "Positions",
-            icon = Icons.Filled.Person,
-        ),
-        MenuData(
-            9,
-            title = "Products",
+            2,
+            title = "Add Ons",
             icon = Icons.Filled.Add,
-        ),
-        MenuData(
-            10,
-            title = "Product Groups",
-            icon = Icons.Filled.Group,
         ),
         MenuData(
             11,
@@ -89,16 +68,31 @@ object Constants {
         MenuData(
             13,
             title = "Size Types",
-            icon = Icons.Filled.Inventory2,
+            icon = Icons.Filled.FormatSize,
         ),
         MenuData(
             15,
             title = "Unit of Measurements",
-            icon = Icons.Filled.FormatSize,
+            icon = Icons.Filled.Album,
+        ),
+        MenuData(
+            6,
+            title = "Expenses",
+            icon = Icons.Filled.Outbound,
+        ),
+        MenuData(
+            5,
+            title = "Currencies",
+            icon = Icons.Filled.Money,
         ),
         MenuData(
             16,
             title = "Manage Users",
+            icon = Icons.Filled.Person,
+        ),
+        MenuData(
+            8,
+            title = "Positions",
             icon = Icons.Filled.Person,
         )
     )
@@ -107,11 +101,13 @@ object Constants {
 
 fun getAuth(token: String): String = "Bearer $token"
 
+fun getImageUrl(fileName: String): String = "${BASE_URL}Images/$fileName"
+
 fun isLetters(value: String): Boolean {
     return value.all { it.isLetter() || it == '-' || it.isWhitespace() }
 }
 
-fun makeStatusNotification(title: String, message: String, notificationId: Int, ctx: Context) {
+fun makeStatusNotification(title: String, message: String, notificationId: Int, ctx: Context, isOnGoing: Boolean) {
     // Create the notification
     val builder = NotificationCompat.Builder(ctx, POS_CHANNEL_NAME)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -119,6 +115,11 @@ fun makeStatusNotification(title: String, message: String, notificationId: Int, 
         .setContentText(message)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setVibrate(LongArray(0))
+        .setOngoing(isOnGoing)
+
+    if(isOnGoing) {
+        builder.setProgress(0, 0, true)
+    }
 
     // Show the notification
     NotificationManagerCompat.from(ctx).notify(notificationId, builder.build())

@@ -23,7 +23,7 @@
     <string name="middlename_should_contain_letters">Middle name should only contain letters.</string>
     <string name="firstname_should_contain_letters">First name should only contain letters.</string>
     <string name="lastname_should_contain_letters">Last name should only contain letters.</string>
-    <string name="hint_landline">Landline (Optional etc. 000–0000)</string>
+    <string name="hint_landline">Landline (Optional, Format: 000–0000)</string>
     <string name="hint_street">Street (Optional)</string>
     <string name="hint_city">City</string>
     <string name="hint_province">Province</string>
@@ -49,4 +49,11 @@
     <string name="weekly_sale">Weekly Sale</string>
     <string name="monthly_sale">Monthly Sale</string>
     <string name="yearly_sale">Yearly Sale</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="position">Position</string>
+    <string name="btn_edit_profile">EDIT PROFILE</string>
+    <string name="btn_view_addresses">VIEW ADDRESSES</string>
+    <string name="btn_save_profile">SAVE PROFILE</string>
+    <string name="owner">Owner</string>
 </resources>

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
 import androidx.core.net.toUri
@@ -41,6 +42,7 @@ import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.HomeScree
 import com.rpfcoding.myposwithjetpackcompose.presentation.destinations.RegisterBusinessScreenDestination
 import com.rpfcoding.myposwithjetpackcompose.util.Constants
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.countries
+import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import java.io.File
 
 @ExperimentalPermissionsApi
@@ -53,18 +55,17 @@ fun RegisterBusinessScreen(
 
     val state = viewModel.state
 
-    val scrollState = rememberScrollState()
 
     val context = LocalContext.current
 
     viewModel.outputWorkInfoList.observe(LocalLifecycleOwner.current) { workInfoList ->
-        if(workInfoList.isEmpty()) {
+        if (workInfoList.isEmpty()) {
             return@observe
         }
 
         val worker = workInfoList[0]
 
-        if(worker.state.isFinished) {
+        if (worker.state.isFinished) {
             navigator.popBackStack(RegisterBusinessScreenDestination, true)
             navigator.navigate(HomeScreenDestination)
         }
@@ -100,176 +101,230 @@ fun RegisterBusinessScreen(
             CircularProgressIndicator()
         }
     } else {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .padding(16.dp)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.End,
+        RegisterBusinessContent(
+            viewModel.selectedImageUri,
+            galleryPermissionState,
+            state,
+            onImagePick = {
+                imagePicker.launch("image/*")
+            },
+            onNameChange = viewModel::onNameChange,
+            onFacebookUrlChange = viewModel::onFacebookUrlChange,
+            onInstagramUrlChange = viewModel::onInstagramUrlChange,
+            onTwitterUrlChange = viewModel::onTwitterUrlChange,
+            onCountryChange = viewModel::onCountryChange,
+            onRegionChange = viewModel::onRegionChange,
+            onProvinceChange = viewModel::onProvinceChange,
+            onCityChange = viewModel::onCityChange,
+            onStreetChange = viewModel::onStreetChange,
+            onLandlineNoChange = viewModel::onLandlineNoChange,
+            onEmailChange = viewModel::onEmailChange,
+            onRegisterClick = viewModel::onRegisterClick
+        )
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun RegisterBusinessContent(
+    selectedImageUri: Uri? = null,
+    galleryPermissionState: PermissionState,
+    state: RegisterBusinessState = RegisterBusinessState(),
+    onImagePick: () -> Unit = {},
+    onNameChange: (String) -> Unit = {},
+    onFacebookUrlChange: (String) -> Unit = {},
+    onInstagramUrlChange: (String) -> Unit = {},
+    onTwitterUrlChange: (String) -> Unit = {},
+    onCountryChange: (String) -> Unit = {},
+    onRegionChange: (String) -> Unit = {},
+    onProvinceChange: (String) -> Unit = {},
+    onCityChange: (String) -> Unit = {},
+    onStreetChange: (String) -> Unit = {},
+    onLandlineNoChange: (String) -> Unit = {},
+    onEmailChange: (String) -> Unit = {},
+    onRegisterClick: () -> Unit = {}
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .padding(16.dp)
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.End,
+    ) {
+        if (selectedImageUri == null) {
+            Image(
+                modifier = getImageModifier(
+                    galleryPermissionState = galleryPermissionState,
+                    onImagePick = {
+                        onImagePick()
+                    }
+                ).align(Alignment.CenterHorizontally),
+                imageVector = Icons.Filled.Person,
+                contentDescription = stringResource(id = R.string.person)
+            )
+        } else {
+            AsyncImage(
+                model = selectedImageUri,
+                contentDescription = "Selected image",
+                modifier = getImageModifier(
+                    galleryPermissionState = galleryPermissionState,
+                    onImagePick = {
+                        onImagePick()
+                    }
+                ).align(Alignment.CenterHorizontally)
+            )
+        }
+        MyOutlinedTextField(
+            value = state.nameText,
+            onValueChange = onNameChange,
+            leadingIcon = Icons.Filled.Store,
+            placeholder = stringResource(id = R.string.hint_business_name),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.nameError != null) {
+            Text(
+                text = state.nameError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.facebookUrlText,
+            onValueChange = onFacebookUrlChange,
+            leadingIcon = Icons.Filled.Link,
+            placeholder = stringResource(id = R.string.hint_facebook_url),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.facebookUrlError != null) {
+            Text(
+                text = state.facebookUrlError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.instagramUrlText,
+            onValueChange = onInstagramUrlChange,
+            leadingIcon = Icons.Filled.Link,
+            placeholder = stringResource(id = R.string.hint_instagram_url),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.instagramUrlError != null) {
+            Text(
+                text = state.instagramUrlError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.twitterUrlText,
+            onValueChange = onTwitterUrlChange,
+            leadingIcon = Icons.Filled.Link,
+            placeholder = stringResource(id = R.string.hint_twitter_url),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.twitterUrlError != null) {
+            Text(
+                text = state.twitterUrlError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MySpinner(
+            title = "Countries",
+            items = countries,
+            onItemSelected = onCountryChange
+        )
+        if (state.countryError != null) {
+            Text(
+                text = state.countryError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.regionText,
+            onValueChange = onRegionChange,
+            leadingIcon = Icons.Filled.Place,
+            placeholder = stringResource(id = R.string.hint_region),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.regionError != null) {
+            Text(
+                text = state.regionError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.provinceText,
+            onValueChange = onProvinceChange,
+            leadingIcon = Icons.Filled.Place,
+            placeholder = stringResource(id = R.string.hint_province),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.provinceError != null) {
+            Text(
+                text = state.provinceError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.cityText,
+            onValueChange = onCityChange,
+            leadingIcon = Icons.Filled.Place,
+            placeholder = stringResource(id = R.string.hint_city),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.cityError != null) {
+            Text(
+                text = state.cityError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.streetText,
+            onValueChange = onStreetChange,
+            leadingIcon = Icons.Filled.Place,
+            placeholder = stringResource(id = R.string.hint_street),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (state.streetError != null) {
+            Text(
+                text = state.streetError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.landlineNoText,
+            onValueChange = onLandlineNoChange,
+            leadingIcon = Icons.Filled.Phone,
+            placeholder = stringResource(id = R.string.hint_landline),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOpts = KeyboardOptions(keyboardType = KeyboardType.Phone)
+        )
+        if (state.landlineNoError != null) {
+            Text(
+                text = state.landlineNoError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        MyOutlinedTextField(
+            value = state.emailText,
+            onValueChange = onEmailChange,
+            leadingIcon = Icons.Filled.Email,
+            placeholder = stringResource(id = R.string.hint_email),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOpts = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
+        if (state.emailError != null) {
+            Text(
+                text = state.emailError.asString(),
+                color = MaterialTheme.colors.error
+            )
+        }
+        Button(
+            onClick = onRegisterClick,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            if (viewModel.selectedImageUri == null) {
-                Image(
-                    modifier = getImageModifier(
-                        galleryPermissionState = galleryPermissionState,
-                        onImagePick = {
-                            imagePicker.launch("image/*")
-                        }
-                    ).align(Alignment.CenterHorizontally),
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = stringResource(id = R.string.person)
-                )
-            } else {
-                AsyncImage(
-                    model = viewModel.selectedImageUri,
-                    contentDescription = "Selected image",
-                    modifier = getImageModifier(
-                        galleryPermissionState = galleryPermissionState,
-                        onImagePick = {
-                            imagePicker.launch("image/*")
-                        }
-                    ).align(Alignment.CenterHorizontally)
-                )
-            }
-            MyOutlinedTextField(
-                value = state.nameText,
-                onValueChange = viewModel::onNameChange,
-                placeholder = stringResource(id = R.string.hint_business_name),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.nameError != null) {
-                Text(
-                    text = state.nameError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.facebookUrlText,
-                onValueChange = viewModel::onFacebookUrlChange,
-                placeholder = stringResource(id = R.string.hint_facebook_url),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.facebookUrlError != null) {
-                Text(
-                    text = state.facebookUrlError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.instagramUrlText,
-                onValueChange = viewModel::onInstagramUrlChange,
-                placeholder = stringResource(id = R.string.hint_instagram_url),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.instagramUrlError != null) {
-                Text(
-                    text = state.instagramUrlError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.twitterUrlText,
-                onValueChange = viewModel::onTwitterUrlChange,
-                placeholder = stringResource(id = R.string.hint_twitter_url),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.twitterUrlError != null) {
-                Text(
-                    text = state.twitterUrlError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MySpinner(
-                title = "Countries",
-                items = countries,
-                onItemSelected = viewModel::onCountryChange
-            )
-            if (state.countryError != null) {
-                Text(
-                    text = state.countryError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.regionText,
-                onValueChange = viewModel::onRegionChange,
-                placeholder = stringResource(id = R.string.hint_region),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.regionError != null) {
-                Text(
-                    text = state.regionError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.provinceText,
-                onValueChange = viewModel::onProvinceChange,
-                placeholder = stringResource(id = R.string.hint_province),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.provinceError != null) {
-                Text(
-                    text = state.provinceError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.cityText,
-                onValueChange = viewModel::onCityChange,
-                placeholder = stringResource(id = R.string.hint_city),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.cityError != null) {
-                Text(
-                    text = state.cityError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.streetText,
-                onValueChange = viewModel::onStreetChange,
-                placeholder = stringResource(id = R.string.hint_street),
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (state.streetError != null) {
-                Text(
-                    text = state.streetError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.landlineNoText,
-                onValueChange = viewModel::onLandlineNoChange,
-                placeholder = stringResource(id = R.string.hint_landline),
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOpts = KeyboardOptions(keyboardType = KeyboardType.Phone)
-            )
-            if (state.landlineNoError != null) {
-                Text(
-                    text = state.landlineNoError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            MyOutlinedTextField(
-                value = state.emailText,
-                onValueChange = viewModel::onEmailChange,
-                placeholder = stringResource(id = R.string.hint_email),
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOpts = KeyboardOptions(keyboardType = KeyboardType.Email)
-            )
-            if (state.emailError != null) {
-                Text(
-                    text = state.emailError.asString(),
-                    color = MaterialTheme.colors.error
-                )
-            }
-            Button(
-                onClick = viewModel::onRegisterClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = stringResource(id = R.string.register))
-            }
+            Text(text = stringResource(id = R.string.register))
         }
     }
 }
@@ -293,3 +348,10 @@ private fun getImageModifier(
             !galleryPermissionState.status.isGranted && !galleryPermissionState.status.shouldShowRationale -> Unit
         }
     }
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Preview
+@Composable
+fun RegisterBusinessContentPreview() {
+    RegisterBusinessContent(galleryPermissionState = rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE))
+}

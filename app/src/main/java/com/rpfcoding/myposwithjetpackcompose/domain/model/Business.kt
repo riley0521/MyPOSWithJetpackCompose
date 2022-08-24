@@ -1,5 +1,9 @@
 package com.rpfcoding.myposwithjetpackcompose.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Business(
     val name: String,
     val facebookUrl: String,
@@ -16,4 +20,4 @@ data class Business(
     val currencies: List<Currency> = emptyList(),
     val listOfUnit: List<UnitOfMeasurement> = emptyList(),
     val sizeTypes: List<SizeType> = emptyList()
-)
+) : Parcelable

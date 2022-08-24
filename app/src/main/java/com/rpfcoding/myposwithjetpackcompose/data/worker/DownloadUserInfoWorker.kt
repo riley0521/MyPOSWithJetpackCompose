@@ -41,7 +41,8 @@ class DownloadUserInfoWorker @AssistedInject constructor(
                 DOWNLOAD_USER_INFORMATION_TITLE,
                 "Downloading...",
                 NOTIFICATION_DOWNLOAD_USER_INFO_ID,
-                ctx = applicationContext
+                ctx = applicationContext,
+                true
             )
 
             return when (val result = authRepository.downloadInfo(token)) {
@@ -51,7 +52,8 @@ class DownloadUserInfoWorker @AssistedInject constructor(
                         result.message?.asString(applicationContext)
                             ?: applicationContext.getString(R.string.unknown_error),
                         NOTIFICATION_DOWNLOAD_USER_INFO_ID,
-                        ctx = applicationContext
+                        ctx = applicationContext,
+                        false
                     )
                     Result.failure()
                 }
@@ -60,7 +62,8 @@ class DownloadUserInfoWorker @AssistedInject constructor(
                         DOWNLOAD_USER_INFORMATION_TITLE,
                         "Download successful!",
                         NOTIFICATION_DOWNLOAD_USER_INFO_ID,
-                        ctx = applicationContext
+                        ctx = applicationContext,
+                        false
                     )
                     Result.success()
                 }

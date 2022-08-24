@@ -1,5 +1,8 @@
 package com.rpfcoding.myposwithjetpackcompose.presentation.common
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -15,6 +18,7 @@ import com.rpfcoding.myposwithjetpackcompose.presentation.startAppDestination
 @Composable
 fun BottomBar(
     navController: NavController,
+    isVisible: Boolean,
     onMenuSelected: (String) -> Unit
 ) {
     val currentDestination = navController.appCurrentDestinationAsState().value
@@ -22,29 +26,36 @@ fun BottomBar(
 
     val context = LocalContext.current
 
-    BottomNavigation(
-        backgroundColor = MaterialTheme.colors.surface
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it })
     ) {
-        BottomBarDestination.values().forEach { destination ->
-            BottomNavigationItem(
-                selected = currentDestination == destination.direction,
-                onClick = {
-                    navController.popBackStack(currentDestination.route, true)
-                    navController.navigate(destination.direction) {
-                        launchSingleTop = true
+        BottomNavigation(
+            backgroundColor = MaterialTheme.colors.surface
+        ) {
+            BottomBarDestination.values().forEach { destination ->
+                BottomNavigationItem(
+                    selected = currentDestination == destination.direction,
+                    onClick = {
+                        navController.popBackStack(currentDestination.route, true)
+                        navController.navigate(destination.direction) {
+                            launchSingleTop = true
+                        }
+                        onMenuSelected(context.getString(destination.label))
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = destination.icon,
+                            contentDescription = stringResource(id = destination.label)
+                        )
+                    },
+                    label = {
+                        Text(text = stringResource(id = destination.label))
                     }
-                    onMenuSelected(context.getString(destination.label))
-                },
-                icon = {
-                    Icon(
-                        imageVector = destination.icon,
-                        contentDescription = stringResource(id = destination.label)
-                    )
-                },
-                label = {
-                    Text(text = stringResource(id = destination.label))
-                }
-            )
+                )
+            }
         }
+
     }
 }

@@ -13,7 +13,7 @@ interface PositionDao {
     suspend fun insert(position: PositionEntity)
 
     @Query("SELECT * FROM tbl_positions WHERE userId = :userId")
-    suspend fun getByUserId(userId: Int): List<PositionEntity>
+    suspend fun getByUserId(userId: Int): PositionEntity?
 
     @Query("DELETE FROM tbl_positions")
     suspend fun deleteAll()

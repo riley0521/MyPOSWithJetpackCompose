@@ -12,6 +12,15 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(user: UserEntity)
 
+    @Query("UPDATE tbl_users SET firstName = :firstName, middleName = :middleName, lastName = :lastName, emailAddress = :email WHERE userId = :userId")
+    suspend fun update(
+        firstName: String,
+        middleName: String,
+        lastName: String,
+        email: String,
+        userId: Int
+    )
+
     @Query("SELECT * FROM tbl_users WHERE userId = :userId")
     suspend fun getById(userId: Int): UserEntity?
 

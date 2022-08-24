@@ -11,6 +11,7 @@ import com.rpfcoding.myposwithjetpackcompose.domain.repository.AuthRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
 import com.rpfcoding.myposwithjetpackcompose.util.UiText
+import com.rpfcoding.myposwithjetpackcompose.util.getImageUrl
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -99,7 +100,7 @@ class AuthRepositoryImpl @Inject constructor(
                     firstName = result.user.firstName,
                     middleName = result.user.middleName,
                     lastName = result.user.lastName,
-                    profileImageUrl = result.user.profileImageUrl,
+                    profileImageUrl = getImageUrl(result.user.profileImageUrl),
                     emailAddress = result.user.emailAddress,
                     isBusinessOwner = result.user.isBusinessOwner,
                     isActive = result.user.isActive,
@@ -161,7 +162,7 @@ class AuthRepositoryImpl @Inject constructor(
         businessDao.insert(
             BusinessEntity(
                 name = business.name,
-                businessLogoUrl = business.businessLogoUrl,
+                businessLogoUrl = getImageUrl(business.businessLogoUrl),
                 facebookUrl = business.facebookUrl,
                 instagramUrl = business.instagramUrl,
                 twitterUrl = business.twitterUrl,

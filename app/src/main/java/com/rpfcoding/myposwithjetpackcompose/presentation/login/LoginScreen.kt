@@ -4,6 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -90,6 +93,7 @@ fun LoginScreen(
                     MyOutlinedTextField(
                         value = state.usernameText,
                         onValueChange = viewModel::onUsernameChange,
+                        leadingIcon = Icons.Filled.Person,
                         placeholder = stringResource(id = R.string.hint_username),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -102,6 +106,7 @@ fun LoginScreen(
                     MyOutlinedTextField(
                         value = state.passwordText,
                         onValueChange = viewModel::onPasswordChange,
+                        leadingIcon = Icons.Filled.Password,
                         placeholder = stringResource(id = R.string.hint_password),
                         modifier = Modifier.fillMaxWidth(),
                         visualTransformation = PasswordVisualTransformation()
