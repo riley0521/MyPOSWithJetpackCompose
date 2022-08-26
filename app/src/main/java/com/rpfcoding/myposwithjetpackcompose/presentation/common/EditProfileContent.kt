@@ -90,7 +90,8 @@ fun EditProfileContent(
     } else {
         Button(
             onClick = onSaveProfileClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = state.isDifferent
         ) {
             Text(text = stringResource(id = R.string.btn_save_profile))
         }

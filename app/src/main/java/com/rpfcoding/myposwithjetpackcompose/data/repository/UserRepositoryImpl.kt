@@ -2,9 +2,8 @@ package com.rpfcoding.myposwithjetpackcompose.data.repository
 
 import com.rpfcoding.myposwithjetpackcompose.R
 import com.rpfcoding.myposwithjetpackcompose.data.local.MyDatabase
-import com.rpfcoding.myposwithjetpackcompose.data.local.dao.UserDao
 import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiUserEndpoints
-import com.rpfcoding.myposwithjetpackcompose.data.remote.response.UpdateUserRequest
+import com.rpfcoding.myposwithjetpackcompose.data.remote.request.UpdateUserRequest
 import com.rpfcoding.myposwithjetpackcompose.domain.model.User
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.UserRepository

@@ -2,9 +2,7 @@ package com.rpfcoding.myposwithjetpackcompose.data.worker
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toFile
-import androidx.core.net.toUri
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -14,14 +12,12 @@ import com.rpfcoding.myposwithjetpackcompose.domain.model.Business
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.BusinessRepository
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.NOTIFICATION_UPLOAD_BUSINESS_INFO_ID
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.UPLOADING_BUSINESS_TITLE
-import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_IMG
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_URI
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_OBJ
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
-import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import com.rpfcoding.myposwithjetpackcompose.util.makeStatusNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import okio.Path.Companion.toPath
 import java.io.File
 import javax.inject.Inject
 
@@ -37,7 +33,7 @@ class CreateBusinessWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
 
         val businessStr = inputData.getString(WK_BUSINESS_OBJ)
-        val selectedImageUri = Uri.parse(inputData.getString(WK_BUSINESS_IMG))
+        val selectedImageUri = Uri.parse(inputData.getString(WK_BUSINESS_URI))
 
         val businessObj = Gson().fromJson(businessStr, Business::class.java)
 

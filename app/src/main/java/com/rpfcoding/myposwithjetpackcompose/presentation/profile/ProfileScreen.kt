@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,7 +47,6 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(160.dp),
-            contentScale = ContentScale.Crop,
             placeholder = painterResource(id = R.drawable.ic_person)
         )
 
@@ -61,8 +59,12 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val fullName = if (state.user.middleName.isNotBlank()) {
+                "${state.user.firstName} ${state.user.middleName} ${state.user.lastName}"
+            } else "${state.user.firstName} ${state.user.lastName}"
+
             ProfileItem(
-                title = "${state.user.firstName} ${state.user.middleName} ${state.user.lastName}",
+                title = fullName,
                 subtitle = stringResource(id = R.string.name),
                 icon = Icons.Filled.Person
             )
@@ -74,9 +76,9 @@ fun ProfileScreen(
             )
 
             ProfileItem(
-                title = if(state.user.position == null && state.user.isBusinessOwner) stringResource(
+                title = if (state.user.position == null && state.user.isBusinessOwner) stringResource(
                     id = R.string.owner
-                ) else if(state.user.position != null) state.user.position.name else "N/A",
+                ) else if (state.user.position != null) state.user.position.name else "N/A",
                 subtitle = stringResource(id = R.string.position),
                 icon = Icons.Filled.Group
             )

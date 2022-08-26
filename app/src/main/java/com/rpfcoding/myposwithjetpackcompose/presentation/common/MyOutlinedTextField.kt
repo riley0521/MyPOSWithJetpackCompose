@@ -25,6 +25,7 @@ fun MyOutlinedTextField(
     maxLines: Int = 1,
     maxLength: Int = 50,
     keyboardOpts: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    singleLine: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     var isVisible by remember {
@@ -65,6 +66,7 @@ fun MyOutlinedTextField(
                     }
                 )
             }
-        }
+        },
+        singleLine = singleLine
     )
 }

@@ -56,4 +56,5 @@
     <string name="btn_view_addresses">VIEW ADDRESSES</string>
     <string name="btn_save_profile">SAVE PROFILE</string>
     <string name="owner">Owner</string>
+    <string name="success">Success!</string>
 </resources>

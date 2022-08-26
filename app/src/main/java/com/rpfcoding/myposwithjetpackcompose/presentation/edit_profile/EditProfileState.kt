@@ -12,5 +12,6 @@ data class EditProfileState(
     val emailText: String = "",
     val emailError: UiText? = null,
     val error: String? = null,
+    val isDifferent: Boolean = false,
     val isLoading: Boolean = false
 )

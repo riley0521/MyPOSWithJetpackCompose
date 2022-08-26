@@ -29,17 +29,28 @@ object Constants {
     const val NOTIFICATION_DOWNLOAD_USER_INFO_ID = 241
     const val NOTIFICATION_UPLOAD_BUSINESS_INFO_ID = 242
     const val NOTIFICATION_DOWNLOAD_PRODUCT_ID = 243
+    const val NOTIFICATION_UPLOAD_PRODUCT_GROUP_ID = 244
 
     const val DOWNLOAD_USER_INFORMATION_TITLE = "Download User Information"
     const val DOWNLOAD_PRODUCT_GROUPS_TITLE = "Download Product Groups"
     const val DOWNLOAD_PRODUCT_TITLE = "Download Products Information"
     const val UPLOADING_BUSINESS_TITLE = "Upload Business Information"
+    const val UPLOADING_PRODUCT_GROUP_TITLE = "Upload Product Group"
+    const val UPLOADING_PRODUCT_TITLE = "Upload Product Information"
 
     const val WORKER_DOWNLOAD_USER_INFORMATION = "worker_download_user_information"
     const val WORKER_CREATE_BUSINESS = "worker_create_business"
 
     const val WK_BUSINESS_OBJ = "wk_business_obj"
-    const val WK_BUSINESS_IMG = "wk_business_img"
+    const val WK_BUSINESS_URI = "wk_business_uri"
+
+    const val WK_PRODUCT_GROUP_OBJ = "wk_product_group_obj"
+    const val WK_PRODUCT_GROUP_URI = "wk_product_group_uri"
+    const val WK_PRODUCT_GROUP_ID = "wk_product_group_id"
+
+    const val WK_PRODUCT_OBJ = "wk_product_obj"
+    const val WK_PRODUCT_URI = "wk_product_uri"
+    const val WK_PRODUCT_ID = "wk_product_id"
 
     const val BASE_URL = "http://10.0.2.2:5009/api/v1/"
 
@@ -107,7 +118,15 @@ fun isLetters(value: String): Boolean {
     return value.all { it.isLetter() || it == '-' || it.isWhitespace() }
 }
 
-fun makeStatusNotification(title: String, message: String, notificationId: Int, ctx: Context, isOnGoing: Boolean) {
+fun makeStatusNotification(
+    title: String,
+    message: String,
+    notificationId: Int,
+    ctx: Context,
+    isOnGoing: Boolean,
+    max: Int = 0,
+    progress: Int = 0
+) {
     // Create the notification
     val builder = NotificationCompat.Builder(ctx, POS_CHANNEL_NAME)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -118,7 +137,7 @@ fun makeStatusNotification(title: String, message: String, notificationId: Int, 
         .setOngoing(isOnGoing)
 
     if(isOnGoing) {
-        builder.setProgress(0, 0, true)
+        builder.setProgress(max, progress, true)
     }
 
     // Show the notification

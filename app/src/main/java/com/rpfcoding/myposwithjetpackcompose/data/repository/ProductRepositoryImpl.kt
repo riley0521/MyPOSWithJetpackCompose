@@ -9,7 +9,11 @@ import com.rpfcoding.myposwithjetpackcompose.data.local.entity.AddOnEntity
 import com.rpfcoding.myposwithjetpackcompose.data.local.entity.InventoryEntity
 import com.rpfcoding.myposwithjetpackcompose.data.local.entity.ProductEntity
 import com.rpfcoding.myposwithjetpackcompose.data.local.entity.ProductGroupEntity
+import com.rpfcoding.myposwithjetpackcompose.data.remote.dto.ProductDto
 import com.rpfcoding.myposwithjetpackcompose.data.remote.endpoint.ApiProductEndpoints
+import com.rpfcoding.myposwithjetpackcompose.data.remote.request.ProductGroupRequest
+import com.rpfcoding.myposwithjetpackcompose.domain.model.Product
+import com.rpfcoding.myposwithjetpackcompose.domain.model.ProductGroup
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.MyPreferencesRepository
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.ProductRepository
 import com.rpfcoding.myposwithjetpackcompose.util.Resource
@@ -18,7 +22,10 @@ import com.rpfcoding.myposwithjetpackcompose.util.getImageUrl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.stateIn
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.HttpException
+import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
@@ -164,5 +171,90 @@ class ProductRepositoryImpl @Inject constructor(
             ),
             pagingSourceFactory = pagingSource
         ).flow
+    }
+
+    override suspend fun createProductGroup(
+        productGroup: ProductGroup,
+        imageFile: File?
+    ): Resource<Pair<Int, String>> {
+        return try {
+
+            var groupImageUrl = ""
+
+            val token = prefRepository.readToken().stateIn(CoroutineScope(coroutineContext)).value
+            val businessId = prefRepository.readBusinessId().stateIn(CoroutineScope(coroutineContext)).value
+
+            imageFile?.let {
+                val res = api.uploadProductGroupImage(
+                    token,
+                    MultipartBody.Part.createFormData(
+                        "image",
+                        imageFile.name,
+                        imageFile.asRequestBody()
+                    )
+                )
+
+                groupImageUrl = res.fileName
+            }
+
+            val result = api.createProductGroup(
+                token = token,
+                body = ProductGroupRequest(
+                    businessId,
+                    productGroup.name,
+                    groupImageUrl
+                )
+            )
+
+            Resource.Success(Pair(result.id, groupImageUrl))
+        } catch (e: HttpException) {
+            Resource.Error(UiText.DynamicString(e.response()?.errorBody()?.string() ?: "Unknown error occurred."))
+        } catch (e: IOException) {
+            Resource.Error(UiText.StringResource(resId = R.string.unknown_error))
+        }
+    }
+
+    override suspend fun createProduct(
+        groupId: Int,
+        product: Product,
+        imageFile: File?
+    ): Resource<Pair<Int, String>> {
+        return try {
+
+            var productImageUrl = ""
+
+            val token = prefRepository.readToken().stateIn(CoroutineScope(coroutineContext)).value
+
+            imageFile?.let {
+                val res = api.uploadProductImage(
+                    token,
+                    MultipartBody.Part.createFormData(
+                        "image",
+                        imageFile.name,
+                        imageFile.asRequestBody()
+                    )
+                )
+                productImageUrl = res.fileName
+            }
+
+            val result = api.createProduct(
+                token = token,
+                body = ProductDto(
+                    productGroupId = groupId,
+                    name = product.name,
+                    basePrice = product.basePrice,
+                    baseCost = product.baseCost,
+                    type = product.type,
+                    description = product.description,
+                    productImageUrl = productImageUrl
+                )
+            )
+
+            Resource.Success(Pair(result.id, productImageUrl))
+        } catch (e: HttpException) {
+            Resource.Error(UiText.DynamicString(e.response()?.errorBody()?.string() ?: "Unknown error occurred."))
+        } catch (e: IOException) {
+            Resource.Error(UiText.StringResource(resId = R.string.unknown_error))
+        }
     }
 }

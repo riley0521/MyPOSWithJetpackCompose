@@ -16,13 +16,11 @@ import com.rpfcoding.myposwithjetpackcompose.data.worker.CreateBusinessWorker
 import com.rpfcoding.myposwithjetpackcompose.data.worker.DownloadUserInfoWorker
 import com.rpfcoding.myposwithjetpackcompose.domain.model.Business
 import com.rpfcoding.myposwithjetpackcompose.domain.repository.BusinessRepository
-import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_IMG
+import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_URI
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.WK_BUSINESS_OBJ
 import com.rpfcoding.myposwithjetpackcompose.util.Constants.WORKER_CREATE_BUSINESS
 import com.rpfcoding.myposwithjetpackcompose.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -167,7 +165,7 @@ class RegisterBusinessViewModel @Inject constructor(
             .setInputData(
                 workDataOf(
                     WK_BUSINESS_OBJ to businessStr,
-                    WK_BUSINESS_IMG to selectedImageUri.toString()
+                    WK_BUSINESS_URI to selectedImageUri.toString()
                 )
             )
             .build()

@@ -55,7 +55,7 @@ class DownloadUserInfoWorker @AssistedInject constructor(
                         ctx = applicationContext,
                         false
                     )
-                    Result.failure()
+                    Result.retry()
                 }
                 is Resource.Success -> {
                     makeStatusNotification(

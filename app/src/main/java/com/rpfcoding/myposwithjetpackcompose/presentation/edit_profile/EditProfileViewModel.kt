@@ -37,30 +37,42 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun setState() {
-        val user = savedStateHandle.get<User>("user")
+        val user = savedStateHandle.get<User>("user") ?: return
 
         state = state.copy(
-            firstNameText = user?.firstName ?: "",
-            middleNameText = user?.middleName ?: "",
-            lastNameText = user?.lastName ?: "",
-            emailText = user?.emailAddress ?: ""
+            firstNameText = user.firstName,
+            middleNameText = user.middleName,
+            lastNameText = user.lastName,
+            emailText = user.emailAddress
         )
     }
 
     fun onFirstNameChange(value: String) {
         state = state.copy(firstNameText = value)
+        state = state.copy(isDifferent = isDifferent())
     }
 
     fun onMiddleNameChange(value: String) {
         state = state.copy(middleNameText = value)
+        state = state.copy(isDifferent = isDifferent())
     }
 
     fun onLastNameChange(value: String) {
         state = state.copy(lastNameText = value)
+        state = state.copy(isDifferent = isDifferent())
     }
 
     fun onEmailChange(value: String) {
         state = state.copy(emailText = value)
+        state = state.copy(isDifferent = isDifferent())
+    }
+
+    private fun isDifferent(): Boolean {
+        val user = savedStateHandle.get<User>("user") ?: return false
+        return user.firstName != state.firstNameText ||
+                user.middleName != state.middleNameText ||
+                user.lastName != state.lastNameText ||
+                user.emailAddress != state.emailText
     }
 
     fun onSaveProfileClick() {
@@ -69,7 +81,7 @@ class EditProfileViewModel @Inject constructor(
 
             verifyState()
 
-            if(
+            if (
                 state.firstNameError == null &&
                 state.middleNameError == null &&
                 state.lastNameError == null &&
@@ -77,7 +89,7 @@ class EditProfileViewModel @Inject constructor(
             ) {
                 delay(1500L)
 
-                when(val result = userRepository.saveUser(
+                when (val result = userRepository.saveUser(
                     state.firstNameText,
                     state.middleNameText,
                     state.lastNameText,
@@ -133,7 +145,7 @@ class EditProfileViewModel @Inject constructor(
     }
 
     sealed class EditProfileEvent {
-        data class ShowError(val msg: UiText? = null): EditProfileEvent()
+        data class ShowError(val msg: UiText? = null) : EditProfileEvent()
         object NavigateBack : EditProfileEvent()
     }
 }
